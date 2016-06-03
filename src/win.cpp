@@ -66,6 +66,8 @@ void WindowManager::init(std::string cap, Uint32 width, Uint32 height, IApp* app
 	// Setup glew
 	glewInit();
 	// Other Inits 
+	InputManager::create();
+	timer.init();
 
 	// Init App if is not null
 	if (app != 0) {
@@ -77,18 +79,39 @@ void WindowManager::update() {
 
 	SDL_Event e;
 
+	InputManager* variable = InputManager::getInstance(InputManager::IMT_VARIABLE);
+	InputManager* fixed = InputManager::getInstance(InputManager::IMT_FIXED);
+
 	while (this->isRunning) {
+
+		timer.update();
 
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				this->exit();
 			}
+
+			fixed->doEvent(e);
+			variable->doEvent(e);
 		}
 
 		if (app != 0) {
-			app->fixedUpdate();
-			app->update(0.0);
+
+			if (timer.isFixedUpdate()) {
+				app->fixedUpdate();
+			}
+			app->update(timer.getVariableDelta());
 			app->render();
+		}
+
+		if (timer.isFixedUpdate()) {
+			fixed->update();
+		}
+
+		variable->update();
+
+		if (timer.isFixedUpdate()) {
+			timer.resetFixedUpdate();
 		}
 
 		SDL_GL_SwapWindow(this->window);
@@ -100,6 +123,8 @@ void WindowManager::release() {
 	if (app != 0) {
 		app->release();
 	}
+
+	InputManager::destroy();
 
 	SDL_GL_DeleteContext(this->context);
 	SDL_DestroyWindow(this->window);

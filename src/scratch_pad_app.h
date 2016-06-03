@@ -3,6 +3,9 @@
 
 
 class ScratchPadApp : public IApp {
+
+	InputManager* input;
+
 public:
 	// This is for initiaization
 	virtual void init();

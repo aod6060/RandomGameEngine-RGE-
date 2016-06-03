@@ -127,13 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\scratch_pad_app.cpp" />
+    <ClCompile Include="..\..\src\timer.cpp" />
     <ClCompile Include="..\..\src\win.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\input.h" />
     <ClInclude Include="..\..\src\scratch_pad_app.h" />
     <ClInclude Include="..\..\src\sys.h" />
+    <ClInclude Include="..\..\src\timer.h" />
     <ClInclude Include="..\..\src\win.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

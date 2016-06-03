@@ -21,9 +21,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 // Project Libries 
+#include "timer.h"
 #include "win.h"
-
-
+#include "input.h"
 #include "scratch_pad_app.h"
 
 #endif

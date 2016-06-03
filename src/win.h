@@ -15,6 +15,7 @@ public:
 	// Release 
 	virtual void release() = 0;
 };
+
 class WindowManager {
 private:
 	static WindowManager* instance;
@@ -26,12 +27,14 @@ private:
 	bool isRunning;
 	IApp* app;
 
+	Timer timer;
+
 	// Constuctors
 	WindowManager();
 
 	WindowManager(WindowManager&) {}
 
-	WindowManager& operator = (WindowManager&);
+	WindowManager& operator = (WindowManager&) {}
 
 public:
 
@@ -52,4 +55,5 @@ public:
 	void exit();
 
 };
+
 #endif

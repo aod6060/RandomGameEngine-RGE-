@@ -1,8 +1,6 @@
 #include "sys.h"
 
 int main(int argc, char** argv) {
-
-
 	ScratchPadApp app;
 
 	WindowManager* wm = WindowManager::getInstance();

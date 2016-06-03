@@ -14,13 +14,6 @@ void InputManager::createInputMapping(std::string name, const InputMapping& inpu
 	InputManager::fixedInstance->_createInputMapping(name, inputMapping);
 }
 
-/*
-void InputManager::doEvent(const SDL_Event& e) {
-	InputManager::variableInstance->_doEvent(e);
-	InputManager::fixedInstance->_doEvent(e);
-}
-*/
-
 void InputManager::setGrab(bool b) {
 	if (b) {
 		SDL_SetRelativeMouseMode(SDL_TRUE);

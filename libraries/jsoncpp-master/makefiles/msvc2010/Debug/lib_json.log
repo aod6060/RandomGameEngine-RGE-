@@ -1,0 +1,5 @@
+﻿  json_writer.cpp
+  json_value.cpp
+  json_reader.cpp
+  Generating Code...
+  lib_json.vcxproj -> C:\Users\Fred\Desktop\Project3\RGE\libraries\jsoncpp-master\makefiles\msvc2010\Debug\lib_json.lib

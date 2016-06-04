@@ -193,3 +193,98 @@ Program::Uniforms* Program::getUniforms() {
 Program::Attributes* Program::getAttributes() {
 	return &this->attributes;
 }
+// MeshOBJ
+MeshOBJ::MeshOBJ() {}
+void MeshOBJ::handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal) {
+	std::vector<std::string> temp;
+	util_strSplit(str, '/', temp);
+	vertice = util_toInt(temp[0]) - 1;
+	texCoord = util_toInt(temp[1]) - 1;
+	normal = util_toInt(temp[2]) - 1;
+	temp.clear();
+}
+void MeshOBJ::init(std::string fn) {
+	// Content
+	std::vector<std::string> contents;
+	std::vector<std::string> temp;
+	// Holders for object file stuff
+	std::vector<glm::vec3> v;
+	std::vector<glm::vec2> vt;
+	std::vector<glm::vec3> vn;
+	std::vector<Face> f;
+	// Load File
+	util_loadFile(fn, contents);
+	// Parse Object File
+	for (GLint i = 0; i < contents.size(); i++) {
+		util_strSplit(contents[i], ' ', temp);
+		if (temp[0] == "v") {
+			glm::vec3 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = util_toFloat(temp[2]);
+			t.z = util_toFloat(temp[3]);
+			v.push_back(t);
+		} else if(temp[0] == "vt") {
+			glm::vec2 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = 1.0f - util_toFloat(temp[2]);
+			vt.push_back(t);
+		} else if(temp[0] == "vn") {
+			glm::vec3 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = util_toFloat(temp[2]);
+			t.z = util_toFloat(temp[3]);
+			vn.push_back(glm::normalize(t));
+		} else if(temp[0] == "f") {
+			Face face;
+			handleFace(temp[1], face.vertice.v1, face.texCoord.v1, face.normal.v1);
+			handleFace(temp[2], face.vertice.v2, face.texCoord.v2, face.normal.v2);
+			handleFace(temp[3], face.vertice.v3, face.texCoord.v3, face.normal.v3);
+			f.push_back(face);
+		}
+		temp.clear();
+	}
+	// Add data to StaticVertexBuffer
+	for (GLuint i = 0; i < f.size(); i++) {
+		// Vertices
+		vertices.add(v[f[i].vertice.v1]);
+		vertices.add(v[f[i].vertice.v2]);
+		vertices.add(v[f[i].vertice.v3]);
+		// TexCoords
+		texCoords.add(vt[f[i].texCoord.v1]);
+		texCoords.add(vt[f[i].texCoord.v2]);
+		texCoords.add(vt[f[i].texCoord.v3]);
+		// Normals
+		normals.add(vn[f[i].normal.v1]);
+		normals.add(vn[f[i].normal.v2]);
+		normals.add(vn[f[i].normal.v3]);
+	}
+	// Initialize StaticVertexBuffers
+	vertices.init();
+	texCoords.init();
+	normals.init();
+
+}
+void MeshOBJ::render(Program& program) {
+	vertices.bind();
+	program.getAttributes()->pointer("vertices", 3, GL_FLOAT);
+	texCoords.bind();
+	program.getAttributes()->pointer("texCoords", 2, GL_FLOAT);
+	normals.bind();
+	program.getAttributes()->pointer("normals", 3, GL_FLOAT);
+	normals.unbind();
+	program.getAttributes()->enable("vertices");
+	program.getAttributes()->enable("texCoords");
+	program.getAttributes()->enable("normals");
+	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
+	program.getAttributes()->disable("vertices");
+	program.getAttributes()->disable("texCoords");
+	program.getAttributes()->disable("normals");
+}
+void MeshOBJ::release() {
+	this->vertices.release();
+	this->texCoords.release();
+	this->normals.release();
+}
+void MeshOBJ::getVertexVector(std::vector<glm::vec3>& v) {
+	this->vertices.getList(v);
+}

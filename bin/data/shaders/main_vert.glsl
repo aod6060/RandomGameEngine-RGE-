@@ -7,6 +7,8 @@
 
 // Vertices
 in vec3 vertices;
+in vec2 texCoords;
+in vec3 normals;
 // Uniforms
 uniform mat4 projection;
 uniform mat4 view;

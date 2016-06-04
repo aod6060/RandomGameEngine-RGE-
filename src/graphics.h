@@ -7,40 +7,40 @@ private:
 	std::vector<T> list;
 	GLuint id;
 public:
-
+	StaticVertexBuffer() {
+		id = 0;
+	}
 	void add(const T& t) {
 		list.push_back(t);
 	}
-
 	void init() {
 		glGenBuffers(1, &id);
 		bind();
 		glBufferData(GL_ARRAY_BUFFER, size(), &list[0], GL_STATIC_DRAW);
 		unbind();
 	}
-
 	void bind() {
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 	}
-
 	void unbind() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
 	void release() {
 		glDeleteBuffers(1, &id);
 	}
-
 	GLuint type_size() {
 		return sizeof(T);
 	}
-
 	GLuint count() {
 		return list.size();
 	}
-
 	GLuint size() {
 		return type_size() * count();
+	}
+	void getList(std::vector<T>& v) {
+		for (int i = 0; i < list.size(); i++) {
+			v.push_back(list[i]);
+		}
 	}
 };
 
@@ -116,4 +116,29 @@ public:
 	Attributes* getAttributes();
 };
 
+class MeshOBJ {
+public:
+	struct Attribute {
+		GLuint v1;
+		GLuint v2;
+		GLuint v3;
+	};
+	struct Face {
+		Attribute vertice;
+		Attribute texCoord;
+		Attribute normal;
+	};
+private:
+	StaticVertexBuffer<glm::vec3> vertices;
+	StaticVertexBuffer<glm::vec2> texCoords;
+	StaticVertexBuffer<glm::vec3> normals;
+	// Private Methods
+	void handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal);
+public:
+	MeshOBJ();
+	void init(std::string fn);
+	void render(Program& program);
+	void release();
+	void getVertexVector(std::vector<glm::vec3>& v);
+};
 #endif

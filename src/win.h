@@ -54,6 +54,7 @@ public:
 
 	void exit();
 
+	void warpMouse();
 };
 
 #endif

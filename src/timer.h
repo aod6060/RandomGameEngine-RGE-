@@ -1,7 +1,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+//#define UPS_60 0.0333333
 #define UPS_60 0.0166667
+//#define UPS_60 0.00833333
 
 class Timer {
 private:

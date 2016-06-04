@@ -63,6 +63,8 @@ void WindowManager::init(std::string cap, Uint32 width, Uint32 height, IApp* app
 		std::exit(1);
 	}
 
+	//SDL_GL_SetSwapInterval(1);
+
 	// Setup glew
 	glewInit();
 	// Other Inits 
@@ -141,4 +143,8 @@ Uint32 WindowManager::getHeight() {
 
 void WindowManager::exit() {
 	this->isRunning = false;
+}
+
+void WindowManager::warpMouse() {
+	SDL_WarpMouseInWindow(this->window, this->getWidth() / 2, this->getHeight());
 }

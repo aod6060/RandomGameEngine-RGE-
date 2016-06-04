@@ -20,12 +20,17 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <json/json.h>
+#include <json/value.h>
 // Project Libries 
 #include "util.h"
 #include "timer.h"
 #include "win.h"
 #include "input.h"
 #include "graphics.h"
+#include "transform.h"
+#include "entity.h"
+#include "scene.h"
 
 #include "scratch_pad_app.h"
 

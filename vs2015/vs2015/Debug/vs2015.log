@@ -1,14 +1,4 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(368,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  scratch_pad_app.cpp
-  Generating Code...
-  Compiling...
-  main.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  win.cpp
-  util.cpp
-  timer.cpp
-  input.cpp
-  graphics.cpp
+  entity.cpp
   vs2015.vcxproj -> C:\Users\Fred\Desktop\Project3\RGE\vs2015\vs2015\..\..\bin\run_d.exe
   vs2015.vcxproj -> ..\..\bin\run_d.pdb (Partial PDB)

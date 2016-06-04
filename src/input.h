@@ -333,20 +333,20 @@ private:
 	// Input Mapping
 	std::map<std::string, InputMapping> inputMaps;
 
-	InputManager() {}
+	InputManager();
 
 	InputManager(InputManager&) {}
 
 	InputManager& operator = (InputManager&) {}
 
 	// Input Events
-	void onKeyboardEvent(const SDL_KeyboardEvent& e);
+	void onKeyboardEvent(SDL_KeyboardEvent& e);
 
-	void onMouseButtonEvent(const SDL_MouseButtonEvent& e);
+	void onMouseButtonEvent(SDL_MouseButtonEvent& e);
 
-	void onMouseMotionEvent(const SDL_MouseMotionEvent& e);
+	void onMouseMotionEvent(SDL_MouseMotionEvent& e);
 
-	void onMouseWheelEvent(const SDL_MouseWheelEvent& e);
+	void onMouseWheelEvent(SDL_MouseWheelEvent& e);
 
 	void _createInputMapping(std::string name, const InputMapping& inputMapping);
 
@@ -355,7 +355,6 @@ public:
 	static void create();
 
 	static void createInputMapping(std::string name, const InputMapping& inputMapping);
-
 
 	static void setGrab(bool b);
 
@@ -371,7 +370,7 @@ public:
 
 	void update();
 
-	void doEvent(const SDL_Event& e);
+	void doEvent(SDL_Event& e);
 
 	// Keyboard
 	bool isKeyHit(Uint32 k);
@@ -382,7 +381,7 @@ public:
 
 	bool isMouseButtonPress(Uint32 b);
 
-	void mousePosition(glm::vec2& mc);
+	void mousePosition(glm::ivec2& mc);
 
 	void mouseWheel(glm::vec2& mw);
 

@@ -4,8 +4,11 @@
 
 class ScratchPadApp : public IApp {
 	WindowManager* wm;
+	InputManager* input;
 	Program prog;
-	StaticVertexBuffer<glm::vec3> vertices;
+	MeshOBJ mesh;
+	MeshOBJ floor;
+	Camera camera;
 public:
 	// This is for initiaization
 	virtual void init();

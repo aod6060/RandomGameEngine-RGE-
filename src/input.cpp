@@ -49,8 +49,8 @@ void InputManager::destroy() {
 }
 
 // Input Events
-void InputManager::onKeyboardEvent(const SDL_KeyboardEvent& e) {
-	Uint32 sc = e.keysym.sym;
+void InputManager::onKeyboardEvent(SDL_KeyboardEvent& e) {
+	Uint32 sc = e.keysym.scancode;
 
 	bool pressed = (e.state == SDL_PRESSED) ? true : false;
 
@@ -68,7 +68,7 @@ void InputManager::onKeyboardEvent(const SDL_KeyboardEvent& e) {
 	}
 }
 
-void InputManager::onMouseButtonEvent(const SDL_MouseButtonEvent& e) {
+void InputManager::onMouseButtonEvent(SDL_MouseButtonEvent& e) {
 	Uint32 sc = e.button - 1;
 
 	bool pressed = (e.state == SDL_PRESSED) ? true : false;
@@ -84,19 +84,26 @@ void InputManager::onMouseButtonEvent(const SDL_MouseButtonEvent& e) {
 	}
 }
 
-void InputManager::onMouseMotionEvent(const SDL_MouseMotionEvent& e) {
+void InputManager::onMouseMotionEvent(SDL_MouseMotionEvent& e) {
 	if (InputManager::isGrab()) {
-		this->mx = e.xrel;
-		this->my = e.yrel;
+		this->mx += e.xrel;
+		this->my += e.yrel;
 	} else {
 		this->mx = e.x;
 		this->my = e.y;
 	}
 }
 
-void InputManager::onMouseWheelEvent(const SDL_MouseWheelEvent& e) {
+void InputManager::onMouseWheelEvent(SDL_MouseWheelEvent& e) {
 	this->mwx = e.x;
 	this->mwy = e.y;
+}
+
+InputManager::InputManager() {
+	this->mx = 0;
+	this->my = 0;
+	this->mwx = 0;
+	this->mwy = 0;
 }
 
 void InputManager::init() {
@@ -132,7 +139,7 @@ void InputManager::update() {
 	this->mwy = 0;
 }
 
-void InputManager::doEvent(const SDL_Event& e) {
+void InputManager::doEvent(SDL_Event& e) {
 	switch(e.type) {
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
@@ -168,7 +175,7 @@ bool InputManager::isMouseButtonPress(Uint32 b) {
 	return this->mouseStates[b] == IS_ONCE || this->mouseStates[b] == IS_PRESSED;
 }
 
-void InputManager::mousePosition(glm::vec2& mc) {
+void InputManager::mousePosition(glm::ivec2& mc) {
 	mc.x = mx;
 	mc.y = my;
 }

@@ -4,13 +4,10 @@
 class Scene {
 private:
 	Program program;
-
 	std::map<std::string, MeshOBJ> meshes;
-
 	std::vector<Entity> entities;
-
 	Camera camera;
-
+	Light light;
 public:
 
 	void init(std::string fn);

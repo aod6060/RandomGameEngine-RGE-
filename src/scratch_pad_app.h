@@ -3,12 +3,7 @@
 
 
 class ScratchPadApp : public IApp {
-	WindowManager* wm;
-	InputManager* input;
-	Program prog;
-	MeshOBJ mesh;
-	MeshOBJ floor;
-	Camera camera;
+	Scene scene;
 public:
 	// This is for initiaization
 	virtual void init();

@@ -19,7 +19,8 @@ void Entity::fixedUpdate() {
 }
 
 void Entity::render(Scene& scene) {
-
+	this->transform.getModelMatrix(*scene.getProgram());
+	scene.getMesh(this->meshName)->render(*scene.getProgram());
 }
 
 void Entity::release() {

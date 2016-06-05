@@ -141,4 +141,23 @@ public:
 	void release();
 	void getVertexVector(std::vector<glm::vec3>& v);
 };
+
+struct Light {
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	glm::vec3 position;
+
+	Light() {}
+
+	Light(const glm::vec3& ambient,
+		const glm::vec3& diffuse,
+		const glm::vec3& specular,
+		const glm::vec3& position);
+
+	static void createUniforms(Program& prog);
+
+	static void setUniforms(Program& prog, Light& light);
+
+};
 #endif

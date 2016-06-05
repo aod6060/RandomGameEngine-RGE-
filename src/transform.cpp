@@ -13,8 +13,8 @@ void Transform::getModelMatrix(Program& prog) {
 			glm::rotate(glm::radians(rot.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
 			glm::rotate(glm::radians(rot.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
 			glm::rotate(glm::radians(rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
 	prog.getUniforms()->uniformMat4("model", model);
+	prog.getUniforms()->uniformMat4("normalMatrix", glm::transpose(glm::inverse(model)));
 }
 
 void Transform::setPos(const glm::vec3& pos) {
@@ -52,6 +52,7 @@ void Camera::getViewMatrix(Program& prog) {
 		   glm::rotate(glm::radians(rot.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
 		   glm::translate(-this->pos);
 	prog.getUniforms()->uniformMat4("view", view);
+	prog.getUniforms()->uniform3f("cameraPos", this->pos);
 }
 
 void Camera::fixedUpdate() {
@@ -64,8 +65,6 @@ void Camera::fixedUpdate() {
 		glm::ivec2 mc;
 		
 		input->mousePosition(mc);
-
-		std::cout << mc.x << ", " << mc.y << std::endl;
 
 		rot.x += mc.y * UPS_60 * cameraSpeed;
 		rot.y += mc.x * UPS_60 * cameraSpeed;

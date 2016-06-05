@@ -14,6 +14,10 @@ void Scene::init(std::string fn) {
 	program.getUniforms()->create("projection");
 	program.getUniforms()->create("view");
 	program.getUniforms()->create("model");
+	program.getUniforms()->create("normalMatrix");
+	program.getUniforms()->create("cameraPos");
+	// Light
+	Light::createUniforms(program);
 	program.unbind();
 
 	// Load scene file
@@ -51,7 +55,14 @@ void Scene::init(std::string fn) {
 		util_jsonToVec2(camera["rot"]),
 		camera["fov"].asFloat()
 	);
-
+	// Light
+	Json::Value light = root["light"];
+	this->light = Light(
+		util_jsonToVec3(light["ambient"]),
+		util_jsonToVec3(light["diffuse"]),
+		util_jsonToVec3(light["specular"]),
+		util_jsonToVec3(light["position"])
+	);
 	in.close();
 }
 
@@ -78,6 +89,8 @@ void Scene::render() {
 	camera.getProjectionMatrix(this->program);
 	camera.getViewMatrix(this->program);
 
+	Light::setUniforms(program, light);
+
 	for (int i = 0; i < this->entities.size(); i++) {
 		this->entities[i].render(*this);
 	}
@@ -89,6 +102,14 @@ void Scene::release() {
 	for (int i = 0; i < this->entities.size(); i++) {
 		this->entities[i].release();
 	}
+
+	std::map<std::string, MeshOBJ>::iterator it;
+
+	for (it = meshes.begin(); it != meshes.end(); it++) {
+		it->second.release();
+	}
+
+	meshes.clear();
 
 	program.release();
 }

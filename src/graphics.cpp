@@ -288,3 +288,29 @@ void MeshOBJ::release() {
 void MeshOBJ::getVertexVector(std::vector<glm::vec3>& v) {
 	this->vertices.getList(v);
 }
+
+// Light
+Light::Light(const glm::vec3& ambient,
+	const glm::vec3& diffuse,
+	const glm::vec3& specular,
+	const glm::vec3& position) {
+
+	this->ambient = ambient;
+	this->diffuse = diffuse;
+	this->specular = specular;
+	this->position = position;
+}
+
+void Light::createUniforms(Program& prog) {
+	prog.getUniforms()->create("light.ambient");
+	prog.getUniforms()->create("light.diffuse");
+	prog.getUniforms()->create("light.specular");
+	prog.getUniforms()->create("light.position");
+}
+
+void Light::setUniforms(Program& prog, Light& light) {
+	prog.getUniforms()->uniform3f("light.ambient", light.ambient);
+	prog.getUniforms()->uniform3f("light.diffuse", light.diffuse);
+	prog.getUniforms()->uniform3f("light.specular", light.specular);
+	prog.getUniforms()->uniform3f("light.position", light.position);
+}

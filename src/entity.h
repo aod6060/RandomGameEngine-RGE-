@@ -20,4 +20,5 @@ public:
 
 	void release();
 };
+
 #endif

@@ -23,10 +23,10 @@ c:\users\fred\desktop\project3\rge\src\graphics.h(41): warning C4018: '<': signe
   scene.cpp
 ..\..\src\scene.cpp(32): warning C4018: '<': signed/unsigned mismatch
 ..\..\src\scene.cpp(43): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(71): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(79): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(94): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(102): warning C4018: '<': signed/unsigned mismatch
+..\..\src\scene.cpp(70): warning C4018: '<': signed/unsigned mismatch
+..\..\src\scene.cpp(78): warning C4018: '<': signed/unsigned mismatch
+..\..\src\scene.cpp(93): warning C4018: '<': signed/unsigned mismatch
+..\..\src\scene.cpp(101): warning C4018: '<': signed/unsigned mismatch
   scratch_pad_app.cpp
   timer.cpp
   transform.cpp
@@ -44,7 +44,9 @@ c:\users\fred\desktop\project3\rge\src\graphics.h(41): warning C4018: '<': signe
 ..\..\src\util.cpp(37): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
   win.cpp
   Generating code
-  All 2749 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  0 of 2749 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    45 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   vs2015.vcxproj -> C:\Users\Fred\Desktop\Project3\RGE\vs2015\vs2015\..\..\bin\run.exe
   vs2015.vcxproj -> ..\..\bin\run.pdb (Full PDB)

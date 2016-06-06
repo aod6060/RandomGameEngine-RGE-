@@ -58,7 +58,6 @@ void Scene::init(std::string fn) {
 	// Light
 	Json::Value light = root["light"];
 	this->light = Light(
-		util_jsonToVec3(light["ambient"]),
 		util_jsonToVec3(light["diffuse"]),
 		util_jsonToVec3(light["specular"]),
 		util_jsonToVec3(light["position"])

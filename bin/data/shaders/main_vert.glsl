@@ -7,7 +7,6 @@
 
 // Struct
 struct Light {
-  vec3 ambient;
   vec3 diffuse;
   vec3 specular;
   vec3 position;
@@ -20,7 +19,7 @@ in vec3 normals;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
-uniform mat4 normalMatrix;
+uniform mat4 normalMatrix; // transpose(inverse(model))
 uniform vec3 cameraPos;
 // Light
 uniform Light light;

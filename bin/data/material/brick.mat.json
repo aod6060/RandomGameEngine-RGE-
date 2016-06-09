@@ -1,0 +1,7 @@
+{
+  "albedoMap": "data/textures/bricks/albedo.png",
+  "roughnessMap": "data/textures/bricks/roughness.png",
+  "reflectiveMap": "data/textures/bricks/reflective.png",
+  "normalMap": "data/textures/bricks/normal.png",
+  "heightMap": "data/textures/bricks/height.png"
+}

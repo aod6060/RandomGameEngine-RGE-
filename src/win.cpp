@@ -38,6 +38,8 @@ void WindowManager::init(std::string cap, Uint32 width, Uint32 height, IApp* app
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	//SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	this->window = SDL_CreateWindow(
@@ -66,9 +68,14 @@ void WindowManager::init(std::string cap, Uint32 width, Uint32 height, IApp* app
 	//SDL_GL_SetSwapInterval(1);
 
 	// Setup glew
-	glewInit();
+	if (glewInit() != GLEW_OK) {
+		std::cerr << "GLEW was not initialized!!!" << std::endl;
+	}
 	// Other Inits 
 	InputManager::create();
+
+	Texture2D::initDefaults();
+
 	timer.init();
 
 	// Init App if is not null
@@ -125,6 +132,8 @@ void WindowManager::release() {
 	if (app != 0) {
 		app->release();
 	}
+
+	Texture2D::releaseDefaults();
 
 	InputManager::destroy();
 

@@ -1,0 +1,6 @@
+{
+  "albedoMap": "data/textures/youngfield/albedo.png",
+  "roughnessMap": "data/textures/youngfield/roughness.png",
+  "reflectiveMap": "data/textures/youngfield/reflective.png",
+  "normalMap": "data/textures/youngfield/normal.png"
+}

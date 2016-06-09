@@ -1,0 +1,6 @@
+{
+  "albedoMap": "data/textures/water/albedo.png",
+  "roughnessMap": "data/textures/water/roughness.png",
+  "reflectiveMap": "data/textures/water/reflective.png",
+  "normalMap": "data/textures/water/normal.png"
+}

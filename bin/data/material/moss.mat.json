@@ -1,0 +1,6 @@
+{
+  "albedoMap": "data/textures/moss/albedo.png",
+  "roughnessMap": "data/textures/moss/roughness.png",
+  "reflectiveMap": "data/textures/moss/reflective.png",
+  "normalMap": "data/textures/moss/normal.png"
+}

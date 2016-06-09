@@ -43,7 +43,17 @@ public:
 		}
 	}
 };
-
+/*
+class VertexArray {
+private:
+	GLuint id;
+public:
+	void init();
+	void bind();
+	void unbind();
+	void release();
+};
+*/
 class Program {
 public:
 	class Shader {
@@ -64,7 +74,7 @@ public:
 	class Uniforms {
 	private:
 		Program* program;
-		std::map<std::string, GLuint> values;
+		std::map<std::string, GLint> values;
 	public:
 		Uniforms();
 		void init(Program* program);
@@ -88,7 +98,7 @@ public:
 	class Attributes {
 	private:
 		Program* program;
-		std::map<std::string, GLuint> values;
+		std::map<std::string, GLint> values;
 	public:
 		Attributes();
 		void init(Program* program);
@@ -115,7 +125,30 @@ public:
 	Uniforms* getUniforms();
 	Attributes* getAttributes();
 };
+class Texture2D {
+private:
+	GLuint id;
+	GLuint width, height;
+public:
+	Texture2D();
+	void init(std::string fn);
+	void bind(GLenum e = GL_TEXTURE0);
+	void unbind(GLenum e = GL_TEXTURE0);
+	void release();
+	GLuint getID();
+	GLuint getWidth();
+	GLuint getHeight();
+	bool isInited();
+	static Texture2D albedo;
+	static Texture2D roughness;
+	static Texture2D reflective;
+	static Texture2D normal;
+	static Texture2D heightMap;
 
+	static void initDefaults();
+	static void releaseDefaults();
+
+};
 class MeshOBJ {
 public:
 	struct Attribute {
@@ -132,6 +165,8 @@ private:
 	StaticVertexBuffer<glm::vec3> vertices;
 	StaticVertexBuffer<glm::vec2> texCoords;
 	StaticVertexBuffer<glm::vec3> normals;
+	StaticVertexBuffer<glm::vec3> tangents;
+	StaticVertexBuffer<glm::vec3> bitangents;
 	// Private Methods
 	void handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal);
 public:
@@ -141,7 +176,6 @@ public:
 	void release();
 	void getVertexVector(std::vector<glm::vec3>& v);
 };
-
 struct Light {
 	glm::vec3 diffuse;
 	glm::vec3 specular;
@@ -157,5 +191,23 @@ struct Light {
 
 	static void setUniforms(Program& prog, Light& light);
 
+};
+struct Material {
+	glm::vec3 albedo;
+	float fresnel;
+	float roughness;
+	Texture2D albedoMap;
+	Texture2D roughnessMap;
+	Texture2D reflectiveMap;
+	Texture2D normalMap;
+	Texture2D heightMap;
+
+	Material();
+	Material(std::string fn);
+	void bind();
+	void unbind();
+	void release();
+	static void createUniforms(Program& prog);
+	static void setUniforms(Program& prog, Material& material);
 };
 #endif

@@ -1,0 +1,6 @@
+{
+  "albedoMap": "data/textures/oldsandbags/albedo.png",
+  "roughnessMap": "data/textures/oldsandbags/roughness.png",
+  "reflectiveMap": "data/textures/oldsandbags/reflective.png",
+  "normalMap": "data/textures/oldsandbags/normal.png"
+}

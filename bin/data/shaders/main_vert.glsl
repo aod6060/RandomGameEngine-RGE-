@@ -15,6 +15,8 @@ struct Light {
 in vec3 vertices;
 in vec2 texCoords;
 in vec3 normals;
+in vec3 tangents;
+in vec3 bitangents;
 // Uniforms
 uniform mat4 projection;
 uniform mat4 view;
@@ -24,18 +26,29 @@ uniform vec3 cameraPos;
 // Light
 uniform Light light;
 // Varying
-out vec3 v_normals;
+//out vec3 v_normals;
+out mat3 v_tbn;
 out vec3 v_lightDirection;
 out vec3 v_view;
+out vec3 v_tangentView;
+out vec2 v_texCoords;
 
 void main() {
   gl_Position = projection * view * model * vec4(vertices, 1.0);
   // Caculating Lighting stuff I'll need
   vec3 posModel = (model * vec4(vertices, 1.0)).xyz;
   // Caculating Light
+  // Build Matrix
+  vec3 t = normalize(vec3(normalMatrix * vec4(tangents, 0.0)));
+  vec3 b = normalize(vec3(normalMatrix * vec4(bitangents, 0.0)));
+  vec3 n = normalize(vec3(normalMatrix * vec4(normals, 0.0)));
+  v_tbn = mat3(t, b, n);
   v_lightDirection = normalize(-light.position);
   // Calculating normals
-  v_normals = normalize((normalMatrix * vec4(normals, 0.0)).xyz);
+  //v_normals = normalize((normalMatrix * vec4(normals, 0.0)).xyz);
   // Caculate View
   v_view = normalize(cameraPos - posModel);
+  v_tangentView = v_tbn * v_view;
+  // Grabbing Texture Coords
+  v_texCoords = texCoords;
 }

@@ -7,6 +7,7 @@ class Scene;
 class Entity {
 private:
 	std::string meshName;
+	std::string materialName;
 	Transform transform;
 public:
 

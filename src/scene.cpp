@@ -6,10 +6,11 @@ void Scene::init(std::string fn) {
 	// Init Program
 	program.init("data/shaders/main_vert.glsl", "data/shaders/main_frag.glsl");
 	program.bind();
-	// Init Attributes (This will change when I start working with layouts)
 	program.getAttributes()->create("vertices");
 	program.getAttributes()->create("texCoords");
 	program.getAttributes()->create("normals");
+	program.getAttributes()->create("tangents");
+	program.getAttributes()->create("bitangents");
 	// Init Uniforms
 	program.getUniforms()->create("projection");
 	program.getUniforms()->create("view");
@@ -18,6 +19,8 @@ void Scene::init(std::string fn) {
 	program.getUniforms()->create("cameraPos");
 	// Light
 	Light::createUniforms(program);
+	// Materials
+	Material::createUniforms(program);
 	program.unbind();
 
 	// Load scene file
@@ -46,6 +49,14 @@ void Scene::init(std::string fn) {
 				entity.init(entities[i]);
 				this->entities.push_back(entity);
 			}
+		}
+	}
+	// Load Materials
+	Json::Value materials = root["materials"];
+	if (materials.isArray()) {
+		for (int i = 0; i < materials.size(); i++) {
+			//aterial material = Material(material["location"].asString());
+			this->materials[materials[i]["name"].asString()] = Material(materials[i]["location"].asString());
 		}
 	}
 	// Setup Camera
@@ -98,14 +109,25 @@ void Scene::render() {
 }
 
 void Scene::release() {
+	// Release Entities
 	for (int i = 0; i < this->entities.size(); i++) {
 		this->entities[i].release();
 	}
 
-	std::map<std::string, MeshOBJ>::iterator it;
+	// Release Materials
+	std::map<std::string, Material>::iterator materialIT;
 
-	for (it = meshes.begin(); it != meshes.end(); it++) {
-		it->second.release();
+	for (materialIT = materials.begin(); materialIT != materials.end(); materialIT++) {
+		materialIT->second.release();
+	}
+
+	materials.clear();
+
+	// Release Meshes
+	std::map<std::string, MeshOBJ>::iterator meshIT;
+
+	for (meshIT = meshes.begin(); meshIT != meshes.end(); meshIT++) {
+		meshIT->second.release();
 	}
 
 	meshes.clear();
@@ -119,4 +141,8 @@ Program* Scene::getProgram() {
 
 MeshOBJ* Scene::getMesh(std::string name) {
 	return &this->meshes[name];
+}
+
+Material* Scene::getMaterial(std::string name) {
+	return &this->materials[name];
 }

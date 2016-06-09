@@ -1,0 +1,65 @@
+{
+  "meshes": [
+    {"name": "cube", "location": "data/mesh/cube.obj"},
+    {"name": "sphere", "location": "data/mesh/sphere.obj"},
+    {"name": "cylender", "location": "data/mesh/cylender.obj"},
+    {"name": "torus", "location": "data/mesh/torus.obj"},
+    {"name": "monkey", "location": "data/mesh/monkey.obj"},
+    {"name": "floor", "location": "data/mesh/floor.obj"}
+  ],
+  "entities": [
+    {
+      "mesh-name": "floor",
+      "transform": {
+        "pos": [0, 0, 0],
+        "rot": [0, 0, 0]
+      }
+    },
+    {
+      "mesh-name": "cube",
+      "transform": {
+        "pos": [-10, 0, 0],
+        "rot": [0, 0, 0]
+      }
+    },
+    {
+      "mesh-name": "sphere",
+      "transform": {
+        "pos": [10, 0, 0],
+        "rot": [0, 0, 0]
+      }
+    },
+    {
+      "mesh-name": "cylender",
+      "transform": {
+        "pos": [0, 0, -10],
+        "rot": [0, 0, 0]
+      }
+    },
+    {
+      "mesh-name": "torus",
+      "transform": {
+        "pos": [0, 0, 10],
+        "rot": [0, 0, 0]
+      }
+    },
+    {
+      "mesh-name": "monkey",
+      "transform": {
+        "pos": [0, 0, 0],
+        "rot": [0, 0, 0]
+      }
+    }
+  ],
+  "camera": {
+    "pos": [0, 2, 20],
+    "rot": [0, 0],
+    "fov": 45
+  },
+  "light": {
+    "ambient": [0.1, 0.1, 0.1],
+    "diffuse": [0.8, 0.8, 0.8],
+    "specular": [1.0, 1.0, 1.0],
+    "position": [0.0, -0.2, -0.5]
+  }
+}

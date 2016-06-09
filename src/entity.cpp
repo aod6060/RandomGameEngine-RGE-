@@ -3,6 +3,7 @@
 void Entity::init(Json::Value& value) {
 
 	this->meshName = value["mesh-name"].asString();
+	this->materialName = value["material-name"].asString();
 
 	this->transform.init(
 		util_jsonToVec3(value["transform"]["pos"]),
@@ -19,8 +20,11 @@ void Entity::fixedUpdate() {
 }
 
 void Entity::render(Scene& scene) {
+	scene.getMaterial(this->materialName)->bind();
 	this->transform.getModelMatrix(*scene.getProgram());
+	Material::setUniforms(*scene.getProgram(), *scene.getMaterial(this->materialName));
 	scene.getMesh(this->meshName)->render(*scene.getProgram());
+	scene.getMaterial(this->materialName)->unbind();
 }
 
 void Entity::release() {

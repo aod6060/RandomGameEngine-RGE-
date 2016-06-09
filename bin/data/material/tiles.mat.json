@@ -1,0 +1,6 @@
+{
+  "albedoMap": "data/textures/tiles/albedo.png",
+  "roughnessMap": "data/textures/tiles/roughness.png",
+  "reflectiveMap": "data/textures/tiles/reflective.png",
+  "normalMap": "data/textures/tiles/normal.png"
+}

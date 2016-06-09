@@ -1,52 +1,9 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(368,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  entity.cpp
-  graphics.cpp
-..\..\src\graphics.cpp(218): warning C4018: '<': signed/unsigned mismatch
-c:\users\fred\desktop\project3\rge\src\graphics.h(41): warning C4018: '<': signed/unsigned mismatch
-  c:\users\fred\desktop\project3\rge\src\graphics.h(40): note: while compiling class template member function 'void StaticVertexBuffer<glm::vec3>::getList(std::vector<T,std::allocator<_Ty>> &)'
-          with
-          [
-              T=glm::vec3,
-              _Ty=glm::vec3
-          ]
-  ..\..\src\graphics.cpp(289): note: see reference to function template instantiation 'void StaticVertexBuffer<glm::vec3>::getList(std::vector<T,std::allocator<_Ty>> &)' being compiled
-          with
-          [
-              T=glm::vec3,
-              _Ty=glm::vec3
-          ]
-  c:\users\fred\desktop\project3\rge\src\graphics.h(132): note: see reference to class template instantiation 'StaticVertexBuffer<glm::vec3>' being compiled
-  input.cpp
-..\..\src\input.cpp(184): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
-..\..\src\input.cpp(185): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
-  main.cpp
-  scene.cpp
-..\..\src\scene.cpp(32): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(43): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(70): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(78): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(93): warning C4018: '<': signed/unsigned mismatch
-..\..\src\scene.cpp(101): warning C4018: '<': signed/unsigned mismatch
-  scratch_pad_app.cpp
-  timer.cpp
-  transform.cpp
-..\..\src\transform.cpp(69): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(70): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(87): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(88): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(92): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(93): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(97): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(98): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(102): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-..\..\src\transform.cpp(103): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-  util.cpp
-..\..\src\util.cpp(37): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
   win.cpp
   Generating code
-  0 of 2749 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  2 of 2931 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    45 functions had inline decision re-evaluated but remain unchanged
+    7 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   vs2015.vcxproj -> C:\Users\Fred\Desktop\Project3\RGE\vs2015\vs2015\..\..\bin\run.exe
   vs2015.vcxproj -> ..\..\bin\run.pdb (Full PDB)

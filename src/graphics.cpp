@@ -47,6 +47,7 @@ void Program::Uniforms::init(Program* program) {
 
 void Program::Uniforms::create(std::string name) {
 	this->values[name] = glGetUniformLocation(this->program->getID(), name.c_str());
+	std::cout << "Uniform ID: " << this->values[name] << ": Name: " << name << std::endl;
 }
 
 // Integer Uniforms
@@ -111,6 +112,7 @@ void Program::Attributes::init(Program* program) {
 
 void Program::Attributes::create(std::string name) {
 	this->values[name] = glGetAttribLocation(program->getID(), name.c_str());
+	std::cout << "Attribute ID: " << this->values[name] << ": Name: " << name << std::endl;
 }
 
 void Program::Attributes::enable(std::string name) {
@@ -193,6 +195,114 @@ Program::Uniforms* Program::getUniforms() {
 Program::Attributes* Program::getAttributes() {
 	return &this->attributes;
 }
+// Texture2D
+// Default Albedo
+Texture2D Texture2D::albedo = Texture2D();
+// Default roughness
+Texture2D Texture2D::roughness = Texture2D();
+// Default Reflective
+Texture2D Texture2D::reflective = Texture2D();
+// Default normalMap
+Texture2D Texture2D::normal = Texture2D();
+// Default heightMap
+Texture2D Texture2D::heightMap = Texture2D();
+
+Texture2D::Texture2D() {
+	this->id = 0;
+	this->width = 0;
+	this->height;
+}
+
+void Texture2D::init(std::string fn) {
+	SDL_Surface* surf = 0;
+
+	surf = IMG_Load(fn.c_str());
+
+	if (surf == 0) {
+		std::cerr << fn << ": doesn't exist." << std::endl;
+	}
+
+	this->width = surf->w;
+	this->height = surf->h;
+
+
+	glGenTextures(1, &this->id);
+
+	GLuint format = GL_RGB;
+
+	if (surf->format->BytesPerPixel == 4) {
+		format = GL_RGBA;
+	}
+
+	this->bind();
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		format,
+		this->width,
+		this->height,
+		0,
+		format,
+		GL_UNSIGNED_BYTE,
+		surf->pixels);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	this->unbind();
+
+	SDL_FreeSurface(surf);
+}
+
+void Texture2D::bind(GLenum e) {
+	glActiveTexture(e);
+	glBindTexture(GL_TEXTURE_2D, this->id);
+}
+
+void Texture2D::unbind(GLenum e) {
+	glActiveTexture(e);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture2D::release() {
+	glDeleteTextures(1, &id);
+}
+
+GLuint Texture2D::getID() {
+	return this->id;
+}
+
+GLuint Texture2D::getWidth() {
+	return this->height;
+}
+
+GLuint Texture2D::getHeight() {
+	return this->width;
+}
+
+bool Texture2D::isInited() {
+	return this->id != 0;
+}
+
+void Texture2D::initDefaults() {
+	Texture2D::albedo.init("data/textures/default/albedo.png");
+	Texture2D::roughness.init("data/textures/default/roughness.png");
+	Texture2D::reflective.init("data/textures/default/reflective.png");
+	Texture2D::normal.init("data/textures/default/normal.png");
+	Texture2D::heightMap.init("data/textures/default/height.png");
+}
+
+void Texture2D::releaseDefaults() {
+	Texture2D::albedo.release();
+	Texture2D::roughness.release();
+	Texture2D::reflective.release();
+	Texture2D::normal.release();
+	Texture2D::heightMap.release();
+}
+
 // MeshOBJ
 MeshOBJ::MeshOBJ() {}
 void MeshOBJ::handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal) {
@@ -257,12 +367,39 @@ void MeshOBJ::init(std::string fn) {
 		normals.add(vn[f[i].normal.v1]);
 		normals.add(vn[f[i].normal.v2]);
 		normals.add(vn[f[i].normal.v3]);
+		// Caculating Edges
+		glm::vec3 edge1 = v[f[i].vertice.v2] - v[f[i].vertice.v1];
+		glm::vec3 edge2 = v[f[i].vertice.v3] - v[f[i].vertice.v1];
+		// Caculating Delta UV Coords
+		glm::vec2 deltaUV1 = vt[f[i].texCoord.v2] - vt[f[i].texCoord.v1];
+		glm::vec2 deltaUV2 = vt[f[i].texCoord.v3] - vt[f[i].texCoord.v1];
+		// Caculate f
+		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+		// Tangents
+		glm::vec3 tangent;
+		tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+		tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+		tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+		tangent = glm::normalize(tangent);
+		this->tangents.add(tangent);
+		this->tangents.add(tangent);
+		this->tangents.add(tangent);
+		// BiTangents
+		glm::vec3 bitangent;
+		bitangent.x = (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+		bitangent.y = (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+		bitangent.z = (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+		bitangent = glm::normalize(bitangent);
+		this->bitangents.add(bitangent);
+		this->bitangents.add(bitangent);
+		this->bitangents.add(bitangent);
 	}
 	// Initialize StaticVertexBuffers
 	vertices.init();
 	texCoords.init();
 	normals.init();
-
+	tangents.init();
+	bitangents.init();
 }
 void MeshOBJ::render(Program& program) {
 	vertices.bind();
@@ -271,19 +408,55 @@ void MeshOBJ::render(Program& program) {
 	program.getAttributes()->pointer("texCoords", 2, GL_FLOAT);
 	normals.bind();
 	program.getAttributes()->pointer("normals", 3, GL_FLOAT);
-	normals.unbind();
+	tangents.bind();
+	program.getAttributes()->pointer("tangents", 3, GL_FLOAT);
+	bitangents.bind();
+	program.getAttributes()->pointer("bitangents", 3, GL_FLOAT);
+	bitangents.unbind();
+	//normals.unbind();
 	program.getAttributes()->enable("vertices");
 	program.getAttributes()->enable("texCoords");
 	program.getAttributes()->enable("normals");
+	program.getAttributes()->enable("tangents");
+	program.getAttributes()->enable("bitangents");
 	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
+	program.getAttributes()->disable("bitangents");
+	program.getAttributes()->disable("tangents");
 	program.getAttributes()->disable("vertices");
 	program.getAttributes()->disable("texCoords");
 	program.getAttributes()->disable("normals");
+	/*
+	vertices.bind();
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	texCoords.bind();
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	normals.bind();
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	tangents.bind();
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	bitangents.bind();
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	bitangents.unbind();
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
+	glDisableVertexAttribArray(4);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
+	*/
 }
 void MeshOBJ::release() {
 	this->vertices.release();
 	this->texCoords.release();
 	this->normals.release();
+	this->tangents.release();
+	this->bitangents.release();
 }
 void MeshOBJ::getVertexVector(std::vector<glm::vec3>& v) {
 	this->vertices.getList(v);
@@ -309,4 +482,157 @@ void Light::setUniforms(Program& prog, Light& light) {
 	prog.getUniforms()->uniform3f("light.diffuse", light.diffuse);
 	prog.getUniforms()->uniform3f("light.specular", light.specular);
 	prog.getUniforms()->uniform3f("light.position", light.position);
+}
+// Material
+Material::Material() {
+	this->albedo = glm::vec3(0, 0, 0);
+	this->fresnel = 0;
+	this->roughness = 0;
+}
+
+Material::Material(std::string fn) {
+	std::ifstream in(fn.c_str(), std::ifstream::binary);
+
+	Json::Value root;
+
+	in >> root;
+
+	if (!root["albedo"].isNull()) {
+		this->albedo = util_jsonToVec3(root["albedo"]);
+	}
+
+	if (!root["fresnel"].isNull()) {
+		this->fresnel = root["fresnel"].asFloat();
+	}
+
+	if (!root["roughness"]) {
+		this->roughness = root["roughness"].asFloat();
+	}
+
+	if (!root["albedoMap"].isNull()) {
+		this->albedoMap.init(root["albedoMap"].asString());
+	}
+
+	if (!root["roughnessMap"].isNull()) {
+		this->roughnessMap.init(root["roughnessMap"].asString());
+	}
+
+	if (!root["reflectiveMap"].isNull()) {
+		this->reflectiveMap.init(root["reflectiveMap"].asString());
+	}
+
+	if (!root["normalMap"].isNull()) {
+		this->normalMap.init(root["normalMap"].asString());
+	}
+
+	if (!root["heightMap"].isNull()) {
+		this->heightMap.init(root["heightMap"].asString());
+	}
+
+	in.close();
+}
+
+void Material::bind() {
+	if (this->albedoMap.isInited()) {
+		this->albedoMap.bind(GL_TEXTURE0);
+	}
+	else {
+		Texture2D::albedo.bind(GL_TEXTURE0);
+	}
+	if (this->roughnessMap.isInited()) {
+		this->roughnessMap.bind(GL_TEXTURE1);
+	} 
+	else {
+		Texture2D::roughness.bind(GL_TEXTURE1);
+	}
+	if (this->reflectiveMap.isInited()) {
+		this->reflectiveMap.bind(GL_TEXTURE2);
+	} else {
+		Texture2D::reflective.bind(GL_TEXTURE2);
+	}
+	if (this->normalMap.isInited()) {
+		this->normalMap.bind(GL_TEXTURE3);
+	}
+	else {
+		Texture2D::normal.bind(GL_TEXTURE3);
+	}
+	if (this->heightMap.isInited()) {
+		this->heightMap.bind(GL_TEXTURE4);
+	}
+	else {
+		Texture2D::heightMap.bind(GL_TEXTURE4);
+	}
+}
+
+void Material::unbind() {
+	if (this->albedoMap.isInited()) {
+		this->albedoMap.unbind(GL_TEXTURE0);
+	}
+	else {
+		Texture2D::albedo.unbind(GL_TEXTURE0);
+	}
+
+	if (this->roughnessMap.isInited()) {
+		this->roughnessMap.unbind(GL_TEXTURE1);
+	} 
+	else {
+		Texture2D::roughness.unbind(GL_TEXTURE1);
+	}
+	if (this->reflectiveMap.isInited()) {
+		this->reflectiveMap.unbind(GL_TEXTURE2);
+	}
+	else {
+		Texture2D::reflective.unbind(GL_TEXTURE2);
+	}
+	if (this->normalMap.isInited()) {
+		this->normalMap.unbind(GL_TEXTURE3);
+	}
+	else {
+		Texture2D::normal.unbind(GL_TEXTURE3);
+	}
+	if (this->heightMap.isInited()) {
+		this->heightMap.unbind(GL_TEXTURE4);
+	} else {
+		Texture2D::heightMap.unbind(GL_TEXTURE4);
+	}
+}
+
+void Material::release() {
+	if (this->albedoMap.isInited()) {
+		this->albedoMap.release();
+	}
+	if (this->roughnessMap.isInited()) {
+		this->roughnessMap.release();
+	}
+	if (this->reflectiveMap.isInited()) {
+		this->reflectiveMap.release();
+	}
+	if (this->normalMap.isInited()) {
+		this->normalMap.release();
+	}
+	if (this->heightMap.isInited()) {
+		this->heightMap.release();
+	}
+}
+
+void Material::createUniforms(Program& prog) {
+	prog.getUniforms()->create("material.albedo");
+	prog.getUniforms()->create("material.fresnel");
+	prog.getUniforms()->create("material.roughness");
+	prog.getUniforms()->create("material.albedoMap");
+	prog.getUniforms()->uniform1i("material.albedoMap", 0);
+	prog.getUniforms()->create("material.roughnessMap");
+	prog.getUniforms()->uniform1i("material.roughnessMap", 1);
+	prog.getUniforms()->create("material.reflectiveMap");
+	prog.getUniforms()->uniform1i("material.reflectiveMap", 2);
+	prog.getUniforms()->create("material.normalMap");
+	prog.getUniforms()->uniform1i("material.normalMap", 3);
+	prog.getUniforms()->create("material.heightMap");
+	prog.getUniforms()->uniform1i("material.heightMap", 4);
+}
+
+void Material::setUniforms(Program& prog, Material& material) {
+	prog.getUniforms()->uniform3f("material.albedo", material.albedo);
+	prog.getUniforms()->uniform1f("material.fresnel", material.fresnel);
+	prog.getUniforms()->uniform1f("material.roughness", material.roughness);
 }

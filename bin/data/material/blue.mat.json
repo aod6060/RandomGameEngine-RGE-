@@ -1,0 +1,5 @@
+{
+  "albedo": [0.0, 0.0, 1.0],
+  "fresnel": 0.1,
+  "roughness": 0.1
+}

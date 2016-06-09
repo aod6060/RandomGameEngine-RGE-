@@ -7,9 +7,23 @@
     {"name": "monkey", "location": "data/mesh/monkey.obj"},
     {"name": "floor", "location": "data/mesh/floor.obj"}
   ],
+  "materials": [
+    {"name": "red", "location": "data/material/red.mat.json"},
+    {"name": "green", "location": "data/material/green.mat.json"},
+    {"name": "blue", "location": "data/material/blue.mat.json"},
+    {"name": "yellow", "location": "data/material/yellow.mat.json"},
+    {"name": "magenta", "location": "data/material/magenta.mat.json"},
+    {"name": "cyan", "location": "data/material/cyan.mat.json"},
+    {"name": "brick", "location": "data/material/brick.mat.json"},
+    {"name": "moss", "location": "data/material/moss.mat.json"},
+    {"name": "oldsandbags", "location": "data/material/oldsandbags.mat.json"},
+    {"name": "water", "location": "data/material/water.mat.json"},
+    {"name": "youngfield", "location": "data/material/youngfield.mat.json"}
+  ],
   "entities": [
     {
       "mesh-name": "floor",
+      "material-name": "moss",
       "transform": {
         "pos": [0, 0, 0],
         "rot": [0, 0, 0]
@@ -17,6 +31,7 @@
     },
     {
       "mesh-name": "cube",
+      "material-name": "brick",
       "transform": {
         "pos": [-10, 0, 0],
         "rot": [0, 0, 0]
@@ -24,6 +39,7 @@
     },
     {
       "mesh-name": "sphere",
+      "material-name": "oldsandbags",
       "transform": {
         "pos": [10, 0, 0],
         "rot": [0, 0, 0]
@@ -31,6 +47,7 @@
     },
     {
       "mesh-name": "cylender",
+      "material-name": "red",
       "transform": {
         "pos": [0, 0, -10],
         "rot": [0, 0, 0]
@@ -38,6 +55,7 @@
     },
     {
       "mesh-name": "torus",
+      "material-name": "water",
       "transform": {
         "pos": [0, 0, 10],
         "rot": [0, 0, 0]
@@ -45,15 +63,9 @@
     },
     {
       "mesh-name": "monkey",
+      "material-name": "youngfield",
       "transform": {
         "pos": [0, 0, 0],
-        "rot": [0, 0, 0]
-      }
-    },
-    {
-      "mesh-name": "sphere",
-      "transform": {
-        "pos": [-20, 0, -20],
         "rot": [0, 0, 0]
       }
     }

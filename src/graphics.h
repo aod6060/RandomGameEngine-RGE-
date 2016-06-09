@@ -156,6 +156,8 @@ public:
 		Attribute texCoord;
 		Attribute normal;
 	};
+
+
 private:
 	StaticVertexBuffer<glm::vec3> vertices;
 	StaticVertexBuffer<glm::vec2> texCoords;

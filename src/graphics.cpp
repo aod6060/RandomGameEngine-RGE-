@@ -1,5 +1,39 @@
 #include "sys.h"
 
+void VertexArray::init() {
+	glGenVertexArrays(1, &this->id);
+}
+
+void VertexArray::bind() {
+	glBindVertexArray(this->id);
+}
+
+void VertexArray::unbind() {
+	glBindVertexArray(0);
+}
+
+void VertexArray::release() {
+	glDeleteVertexArrays(1, &this->id);
+}
+
+void VertexArray::enable(VertexArrayType type) {
+	glEnableVertexAttribArray(type);
+}
+
+void VertexArray::disable(VertexArrayType type) {
+	glDisableVertexAttribArray(type);
+}
+
+void VertexArray::pointer(VertexArrayType type, GLuint size, GLenum gltype, bool normalize) {
+	glVertexAttribPointer(
+		type, 
+		size, 
+		gltype, 
+		(normalize) ? GL_TRUE : GL_FALSE, 
+		0, 
+		0);
+}
+
 
 // Program::Shader
 Program::Shader::Shader() {
@@ -100,43 +134,6 @@ void Program::Uniforms::uniformMat4(std::string name, const glm::mat4& m, bool t
 void Program::Uniforms::release() {
 	this->program = 0;
 }
-
-// Program::Attributes
-Program::Attributes::Attributes() {
-	this->program = 0;
-}
-
-void Program::Attributes::init(Program* program) {
-	this->program = program;
-}
-
-void Program::Attributes::create(std::string name) {
-	this->values[name] = glGetAttribLocation(program->getID(), name.c_str());
-	std::cout << "Attribute ID: " << this->values[name] << ": Name: " << name << std::endl;
-}
-
-void Program::Attributes::enable(std::string name) {
-	glEnableVertexAttribArray(this->values[name]);
-}
-
-void Program::Attributes::disable(std::string name) {
-	glDisableVertexAttribArray(this->values[name]);
-}
-
-void Program::Attributes::pointer(std::string name, GLuint size, GLenum type, bool normalize) {
-	glVertexAttribPointer(
-		this->values[name],
-		size,
-		type,
-		(normalize) ? GL_TRUE : GL_FALSE,
-		0,
-		0);
-}
-
-void Program::Attributes::release() {
-	this->program = 0;
-}
-
 // Program
 Program::Program() {
 	this->id = 0;
@@ -161,7 +158,7 @@ void Program::init(std::string vfn, std::string ffn) {
 	glLinkProgram(this->id);
 	this->printLog();
 	// Init Attributes
-	this->attributes.init(this);
+	//this->attributes.init(this);
 	// Init Uniforms
 	this->uniforms.init(this);
 }
@@ -176,7 +173,7 @@ void Program::unbind() {
 
 void Program::release() {
 	this->uniforms.release();
-	this->attributes.release();
+	//this->attributes.release();
 	glDetachShader(this->id, vertexShader.getID());
 	glDetachShader(this->id, fragmentShader.getID());
 	glDeleteProgram(this->id);
@@ -192,9 +189,6 @@ Program::Uniforms* Program::getUniforms() {
 	return &this->uniforms;
 }
 
-Program::Attributes* Program::getAttributes() {
-	return &this->attributes;
-}
 // Texture2D
 // Default Albedo
 Texture2D Texture2D::albedo = Texture2D();
@@ -228,9 +222,20 @@ void Texture2D::init(std::string fn) {
 
 	glGenTextures(1, &this->id);
 
+	//GLuint format = GL_RGB;
+	/*
+	GLuint format = GL_SRGB;
+
+	if (surf->format->BytesPerPixel == 4) {
+		format = GL_SRGB_ALPHA;
+	}
+	*/
+
+	GLuint internalFormat = GL_RGB;
 	GLuint format = GL_RGB;
 
 	if (surf->format->BytesPerPixel == 4) {
+		internalFormat = GL_RGBA;
 		format = GL_RGBA;
 	}
 
@@ -242,7 +247,7 @@ void Texture2D::init(std::string fn) {
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
-		format,
+		internalFormat,
 		this->width,
 		this->height,
 		0,
@@ -395,61 +400,44 @@ void MeshOBJ::init(std::string fn) {
 		this->bitangents.add(bitangent);
 	}
 	// Initialize StaticVertexBuffers
+
 	vertices.init();
 	texCoords.init();
 	normals.init();
 	tangents.init();
 	bitangents.init();
+
+	vertexArray.init();
+
+	vertexArray.bind();
+
+	vertices.bind();
+	vertexArray.pointer(VertexArray::VT_VERTICES, 3, GL_FLOAT);
+	vertexArray.enable(VertexArray::VT_VERTICES);
+	texCoords.bind();
+	vertexArray.pointer(VertexArray::VT_TEXCOORDS, 2, GL_FLOAT);
+	vertexArray.enable(VertexArray::VT_TEXCOORDS);
+	normals.bind();
+	vertexArray.pointer(VertexArray::VT_NORMALS, 3, GL_FLOAT);
+	vertexArray.enable(VertexArray::VT_NORMALS);
+	tangents.bind();
+	vertexArray.pointer(VertexArray::VT_TANGENTS, 3, GL_FLOAT);
+	vertexArray.enable(VertexArray::VT_TANGENTS);
+	bitangents.bind();
+	vertexArray.pointer(VertexArray::VT_BITANGENTS, 3, GL_FLOAT);
+	vertexArray.enable(VertexArray::VT_BITANGENTS);
+	vertexArray.unbind();
+	bitangents.unbind();
+	vertexArray.disable(VertexArray::VT_VERTICES);
+	vertexArray.disable(VertexArray::VT_TEXCOORDS);
+	vertexArray.disable(VertexArray::VT_NORMALS);
+	vertexArray.disable(VertexArray::VT_TANGENTS);
+	vertexArray.disable(VertexArray::VT_BITANGENTS);
 }
 void MeshOBJ::render(Program& program) {
-	vertices.bind();
-	program.getAttributes()->pointer("vertices", 3, GL_FLOAT);
-	texCoords.bind();
-	program.getAttributes()->pointer("texCoords", 2, GL_FLOAT);
-	normals.bind();
-	program.getAttributes()->pointer("normals", 3, GL_FLOAT);
-	tangents.bind();
-	program.getAttributes()->pointer("tangents", 3, GL_FLOAT);
-	bitangents.bind();
-	program.getAttributes()->pointer("bitangents", 3, GL_FLOAT);
-	bitangents.unbind();
-	//normals.unbind();
-	program.getAttributes()->enable("vertices");
-	program.getAttributes()->enable("texCoords");
-	program.getAttributes()->enable("normals");
-	program.getAttributes()->enable("tangents");
-	program.getAttributes()->enable("bitangents");
+	vertexArray.bind();
 	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
-	program.getAttributes()->disable("bitangents");
-	program.getAttributes()->disable("tangents");
-	program.getAttributes()->disable("vertices");
-	program.getAttributes()->disable("texCoords");
-	program.getAttributes()->disable("normals");
-	/*
-	vertices.bind();
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	texCoords.bind();
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	normals.bind();
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	tangents.bind();
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	bitangents.bind();
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	bitangents.unbind();
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
-	glDisableVertexAttribArray(4);
-	glDisableVertexAttribArray(3);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(0);
-	*/
+	vertexArray.unbind();
 }
 void MeshOBJ::release() {
 	this->vertices.release();
@@ -457,6 +445,7 @@ void MeshOBJ::release() {
 	this->normals.release();
 	this->tangents.release();
 	this->bitangents.release();
+	this->vertexArray.release();
 }
 void MeshOBJ::getVertexVector(std::vector<glm::vec3>& v) {
 	this->vertices.getList(v);
@@ -491,6 +480,10 @@ Material::Material() {
 }
 
 Material::Material(std::string fn) {
+	this->albedo = glm::vec3(0, 0, 0);
+	this->fresnel = 0;
+	this->roughness = 0;
+
 	std::ifstream in(fn.c_str(), std::ifstream::binary);
 
 	Json::Value root;
@@ -499,14 +492,17 @@ Material::Material(std::string fn) {
 
 	if (!root["albedo"].isNull()) {
 		this->albedo = util_jsonToVec3(root["albedo"]);
+		std::cout << "Albedo: " <<  this->albedo.x << ", " << this->albedo.y << ", " << this->albedo.z << std::endl;
 	}
 
 	if (!root["fresnel"].isNull()) {
 		this->fresnel = root["fresnel"].asFloat();
+		std::cout << "Fresnel: " << this->fresnel << std::endl;
 	}
 
-	if (!root["roughness"]) {
+	if (!root["roughness"].isNull()) {
 		this->roughness = root["roughness"].asFloat();
+		std::cout << "Roughness: " << this->roughness << std::endl;
 	}
 
 	if (!root["albedoMap"].isNull()) {

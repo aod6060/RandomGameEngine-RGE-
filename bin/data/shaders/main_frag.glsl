@@ -14,9 +14,9 @@ struct Light {
 };
 
 struct Material {
-  vec3 albedo; // Color of the object, def <1, 1, 1>
+  vec3 albedo; // Color of the object, def <0, 0, 0>
   float fresnel; // Capted from [0, 1] def <0>
-  float roughness; // Capted from [0, 1] <1>
+  float roughness; // Capted from [0, 1] <0>
   sampler2D albedoMap; // Base Color for object.
   sampler2D roughnessMap; // Rounghess of object
   sampler2D reflectiveMap; // ReflectiveMap
@@ -142,6 +142,8 @@ vec3 computeNormal(vec2 texCoord) {
   normal = normalize(v_tbn * normal);
   return normal;
 }
+
+/*
 vec2 parallaxMapping(vec2 texCoord, vec3 view) {
   const float heightScale = 0.03;
   float height = texture(material.heightMap, texCoord).r;
@@ -158,11 +160,12 @@ vec2 steepParallaxMapping(vec2 texCoord, vec3 view) {
   vec2 deltaTexCoords = P / numLayers;
   // get Initialize Value
   vec2 currentTexCoords = texCoord;
-  float height = texture(material.heightMap, currentTexCoords).r;
+  float defHeight = texture(material.heightMap, currentTexCoords).r;
+  float height = defHeight;
 
   while(currentLayerHeight < height) {
     currentTexCoords -= deltaTexCoords;
-    height = texture(material.heightMap, currentTexCoords).r;
+    height = defHeight;
     currentLayerHeight += layerHeight;
   }
 
@@ -177,11 +180,12 @@ vec2 parallaxOcclusionMapping(vec2 texCoord, vec3 view) {
   vec2 deltaTexCoords = P / numLayers;
   // get Initialize Value
   vec2 currentTexCoords = texCoord;
-  float height = texture(material.heightMap, currentTexCoords).r;
+  float defHeight = texture(material.heightMap, currentTexCoords).r;
+  float height = defHeight;
 
   while(currentLayerHeight < height) {
     currentTexCoords -= deltaTexCoords;
-    height = texture(material.heightMap, currentTexCoords).r;
+    height = defHeight;
     currentLayerHeight += layerHeight;
   }
 
@@ -189,7 +193,7 @@ vec2 parallaxOcclusionMapping(vec2 texCoord, vec3 view) {
   vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
   // get depth after and before collision for linear iterp
   float afterHeight = height - currentLayerHeight;
-  float beforeHeight = texture(material.heightMap, currentTexCoords).r - currentLayerHeight;
+  float beforeHeight = defHeight - currentLayerHeight + layerHeight;
 
   // Iterpolation of texture currentTexCoords
   float weight = afterHeight / (afterHeight - beforeHeight);
@@ -197,17 +201,15 @@ vec2 parallaxOcclusionMapping(vec2 texCoord, vec3 view) {
 
   return finalTexCoords;
 }
+*/
 
 void main() {
-  vec3 vt = normalize(v_tangentView);
-  vec2 tc = parallaxOcclusionMapping(v_texCoords, vt);
-
   vec3 v = normalize(v_view);
-  vec3 n = computeNormal(tc);
+  vec3 n = computeNormal(v_texCoords);
   vec3 l = normalize(v_lightDirection);
 
-  float ref = 19.0 * (material.fresnel + texture(material.reflectiveMap, tc).r) + 1;
-  float r = (material.roughness + texture(material.roughnessMap,tc).r);
+  float ref = 19.0 * (material.fresnel + texture(material.reflectiveMap, v_texCoords).r) + 1;
+  float r = (material.roughness + texture(material.roughnessMap, v_texCoords).r);
 
   // Caculate Energy Conservation
   float r1 = (1 - ref)/(1 + ref);
@@ -218,10 +220,12 @@ void main() {
     r = 1.0 - 0.95;
   }
 
-  vec3 diffuse = light.diffuse * (material.albedo + texture(material.albedoMap, tc).rgb) * diffuse(n, l, v, r) * invf0;
+  vec3 diffuse = light.diffuse * diffuse(n, l, v, r) * invf0;
   vec3 specular = light.specular * specular(n, l, v, r, ref);
 
-  vec3 color = diffuse + specular;
+  vec3 color = (diffuse + specular) * (material.albedo + texture(material.albedoMap, v_texCoords).rgb);
+
+  //color = pow(color, vec3(1.0/2.2));
 
   out_color = vec4(color, 1.0);
   //out_color = texture(material.albedoMap, v_texCoords);

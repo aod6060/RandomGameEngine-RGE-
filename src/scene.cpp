@@ -2,15 +2,18 @@
 
 void Scene::init(std::string fn) {
 	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	// Init Program
 	program.init("data/shaders/main_vert.glsl", "data/shaders/main_frag.glsl");
 	program.bind();
+	/*
 	program.getAttributes()->create("vertices");
 	program.getAttributes()->create("texCoords");
 	program.getAttributes()->create("normals");
 	program.getAttributes()->create("tangents");
 	program.getAttributes()->create("bitangents");
+	*/
 	// Init Uniforms
 	program.getUniforms()->create("projection");
 	program.getUniforms()->create("view");

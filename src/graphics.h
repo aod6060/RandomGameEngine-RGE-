@@ -43,8 +43,15 @@ public:
 		}
 	}
 };
-/*
 class VertexArray {
+public:
+	enum VertexArrayType {
+		VT_VERTICES = 0,
+		VT_TEXCOORDS,
+		VT_NORMALS,
+		VT_TANGENTS,
+		VT_BITANGENTS
+	};
 private:
 	GLuint id;
 public:
@@ -52,8 +59,10 @@ public:
 	void bind();
 	void unbind();
 	void release();
+	void enable(VertexArrayType type);
+	void disable(VertexArrayType type);
+	void pointer(VertexArrayType type, GLuint size, GLenum gltype, bool normalize = false);
 };
-*/
 class Program {
 public:
 	class Shader {
@@ -95,24 +104,10 @@ public:
 		void uniformMat4(std::string name, const glm::mat4& m, bool transpose = false);
 		void release();
 	};
-	class Attributes {
-	private:
-		Program* program;
-		std::map<std::string, GLint> values;
-	public:
-		Attributes();
-		void init(Program* program);
-		void create(std::string name);
-		void enable(std::string name);
-		void disable(std::string name);
-		void pointer(std::string name, GLuint size, GLenum type, bool normalize = false);
-		void release();
-	};
 private:
 	Shader vertexShader;
 	Shader fragmentShader;
 	Uniforms uniforms;
-	Attributes attributes;
 	GLuint id;
 	void printLog();
 public:
@@ -123,8 +118,8 @@ public:
 	void release();
 	GLuint getID();
 	Uniforms* getUniforms();
-	Attributes* getAttributes();
 };
+
 class Texture2D {
 private:
 	GLuint id;
@@ -167,6 +162,7 @@ private:
 	StaticVertexBuffer<glm::vec3> normals;
 	StaticVertexBuffer<glm::vec3> tangents;
 	StaticVertexBuffer<glm::vec3> bitangents;
+	VertexArray vertexArray;
 	// Private Methods
 	void handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal);
 public:

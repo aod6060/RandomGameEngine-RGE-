@@ -9,6 +9,8 @@ private:
 	std::vector<Entity> entities;
 	Camera camera;
 	Light light;
+	Skybox skybox;
+
 public:
 
 	void init(std::string fn);

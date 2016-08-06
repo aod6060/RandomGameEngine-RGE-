@@ -308,57 +308,14 @@ void Texture2D::releaseDefaults() {
 	Texture2D::heightMap.release();
 }
 
-// MeshOBJ
-MeshOBJ::MeshOBJ() {}
-void MeshOBJ::handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal) {
-	std::vector<std::string> temp;
-	util_strSplit(str, '/', temp);
-	vertice = util_toInt(temp[0]) - 1;
-	texCoord = util_toInt(temp[1]) - 1;
-	normal = util_toInt(temp[2]) - 1;
-	temp.clear();
-}
-void MeshOBJ::init(std::string fn) {
-	// Content
-	std::vector<std::string> contents;
-	std::vector<std::string> temp;
-	// Holders for object file stuff
-	std::vector<glm::vec3> v;
-	std::vector<glm::vec2> vt;
-	std::vector<glm::vec3> vn;
-	std::vector<Face> f;
-	// Load File
-	util_loadFile(fn, contents);
-	// Parse Object File
-	for (GLint i = 0; i < contents.size(); i++) {
-		util_strSplit(contents[i], ' ', temp);
-		if (temp[0] == "v") {
-			glm::vec3 t;
-			t.x = util_toFloat(temp[1]);
-			t.y = util_toFloat(temp[2]);
-			t.z = util_toFloat(temp[3]);
-			v.push_back(t);
-		} else if(temp[0] == "vt") {
-			glm::vec2 t;
-			t.x = util_toFloat(temp[1]);
-			t.y = 1.0f - util_toFloat(temp[2]);
-			vt.push_back(t);
-		} else if(temp[0] == "vn") {
-			glm::vec3 t;
-			t.x = util_toFloat(temp[1]);
-			t.y = util_toFloat(temp[2]);
-			t.z = util_toFloat(temp[3]);
-			vn.push_back(glm::normalize(t));
-		} else if(temp[0] == "f") {
-			Face face;
-			handleFace(temp[1], face.vertice.v1, face.texCoord.v1, face.normal.v1);
-			handleFace(temp[2], face.vertice.v2, face.texCoord.v2, face.normal.v2);
-			handleFace(temp[3], face.vertice.v3, face.texCoord.v3, face.normal.v3);
-			f.push_back(face);
-		}
-		temp.clear();
-	}
-	// Add data to StaticVertexBuffer
+// MeshOBJ::MeshDataRegular
+void MeshOBJ::MeshDataRegular::init(
+	MeshOBJ* mesh, 
+	std::vector<glm::vec3>& v, 
+	std::vector<glm::vec2>& vt, 
+	std::vector<glm::vec3>& vn, 
+	std::vector<Face>& f) {
+	
 	for (GLuint i = 0; i < f.size(); i++) {
 		// Vertices
 		vertices.add(v[f[i].vertice.v1]);
@@ -399,58 +356,132 @@ void MeshOBJ::init(std::string fn) {
 		this->bitangents.add(bitangent);
 		this->bitangents.add(bitangent);
 	}
-	// Initialize StaticVertexBuffers
 
+	// Initialize StaticVertexBuffers
 	vertices.init();
 	texCoords.init();
 	normals.init();
 	tangents.init();
 	bitangents.init();
-
-	vertexArray.init();
-
-	vertexArray.bind();
-
+	mesh->getVertexArray()->bind();
 	vertices.bind();
-	vertexArray.pointer(VertexArray::VT_VERTICES, 3, GL_FLOAT);
-	vertexArray.enable(VertexArray::VT_VERTICES);
+	mesh->getVertexArray()->pointer(VertexArray::VT_VERTICES, 3, GL_FLOAT);
+	mesh->getVertexArray()->enable(VertexArray::VT_VERTICES);
 	texCoords.bind();
-	vertexArray.pointer(VertexArray::VT_TEXCOORDS, 2, GL_FLOAT);
-	vertexArray.enable(VertexArray::VT_TEXCOORDS);
+	mesh->getVertexArray()->pointer(VertexArray::VT_TEXCOORDS, 2, GL_FLOAT);
+	mesh->getVertexArray()->enable(VertexArray::VT_TEXCOORDS);
 	normals.bind();
-	vertexArray.pointer(VertexArray::VT_NORMALS, 3, GL_FLOAT);
-	vertexArray.enable(VertexArray::VT_NORMALS);
+	mesh->getVertexArray()->pointer(VertexArray::VT_NORMALS, 3, GL_FLOAT);
+	mesh->getVertexArray()->enable(VertexArray::VT_NORMALS);
 	tangents.bind();
-	vertexArray.pointer(VertexArray::VT_TANGENTS, 3, GL_FLOAT);
-	vertexArray.enable(VertexArray::VT_TANGENTS);
+	mesh->getVertexArray()->pointer(VertexArray::VT_TANGENTS, 3, GL_FLOAT);
+	mesh->getVertexArray()->enable(VertexArray::VT_TANGENTS);
 	bitangents.bind();
-	vertexArray.pointer(VertexArray::VT_BITANGENTS, 3, GL_FLOAT);
-	vertexArray.enable(VertexArray::VT_BITANGENTS);
-	vertexArray.unbind();
+	mesh->getVertexArray()->pointer(VertexArray::VT_BITANGENTS, 3, GL_FLOAT);
+	mesh->getVertexArray()->enable(VertexArray::VT_BITANGENTS);
+	mesh->getVertexArray()->unbind();
 	bitangents.unbind();
-	vertexArray.disable(VertexArray::VT_VERTICES);
-	vertexArray.disable(VertexArray::VT_TEXCOORDS);
-	vertexArray.disable(VertexArray::VT_NORMALS);
-	vertexArray.disable(VertexArray::VT_TANGENTS);
-	vertexArray.disable(VertexArray::VT_BITANGENTS);
+	mesh->getVertexArray()->disable(VertexArray::VT_VERTICES);
+	mesh->getVertexArray()->disable(VertexArray::VT_TEXCOORDS);
+	mesh->getVertexArray()->disable(VertexArray::VT_NORMALS);
+	mesh->getVertexArray()->disable(VertexArray::VT_TANGENTS);
+	mesh->getVertexArray()->disable(VertexArray::VT_BITANGENTS);
 }
-void MeshOBJ::render(Program& program) {
-	vertexArray.bind();
-	glDrawArrays(GL_TRIANGLES, 0, vertices.count());
-	vertexArray.unbind();
+
+GLuint MeshOBJ::MeshDataRegular::size() {
+	return this->vertices.count();
 }
-void MeshOBJ::release() {
+
+void MeshOBJ::MeshDataRegular::getVertexData(std::vector<glm::vec3>& v) {
+	this->vertices.getList(v);
+}
+
+void MeshOBJ::MeshDataRegular::release() {
 	this->vertices.release();
 	this->texCoords.release();
 	this->normals.release();
 	this->tangents.release();
 	this->bitangents.release();
+}
+// MeshOBJ
+MeshOBJ::MeshOBJ() {}
+void MeshOBJ::handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal) {
+	std::vector<std::string> temp;
+	util_strSplit(str, '/', temp);
+	vertice = util_toInt(temp[0]) - 1;
+	texCoord = util_toInt(temp[1]) - 1;
+	normal = util_toInt(temp[2]) - 1;
+	temp.clear();
+}
+void MeshOBJ::init(std::string fn, IMeshData* data) {
+	// Content
+	this->data = data;
+	std::vector<std::string> contents;
+	std::vector<std::string> temp;
+	// Holders for object file stuff
+	std::vector<glm::vec3> v;
+	std::vector<glm::vec2> vt;
+	std::vector<glm::vec3> vn;
+	std::vector<Face> f;
+	// Load File
+	util_loadFile(fn, contents);
+	// Parse Object File
+	for (GLint i = 0; i < contents.size(); i++) {
+		util_strSplit(contents[i], ' ', temp);
+		if (temp[0] == "v") {
+			glm::vec3 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = util_toFloat(temp[2]);
+			t.z = util_toFloat(temp[3]);
+			v.push_back(t);
+		} else if(temp[0] == "vt") {
+			glm::vec2 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = 1.0f - util_toFloat(temp[2]);
+			vt.push_back(t);
+		} else if(temp[0] == "vn") {
+			glm::vec3 t;
+			t.x = util_toFloat(temp[1]);
+			t.y = util_toFloat(temp[2]);
+			t.z = util_toFloat(temp[3]);
+			vn.push_back(glm::normalize(t));
+		} else if(temp[0] == "f") {
+			Face face;
+			handleFace(temp[1], face.vertice.v1, face.texCoord.v1, face.normal.v1);
+			handleFace(temp[2], face.vertice.v2, face.texCoord.v2, face.normal.v2);
+			handleFace(temp[3], face.vertice.v3, face.texCoord.v3, face.normal.v3);
+			f.push_back(face);
+		}
+		temp.clear();
+	}
+	// Add data to StaticVertexBuffer
+
+	vertexArray.init();
+
+	this->data->init(this, v, vt, vn, f);
+}
+void MeshOBJ::render(Program& program) {
+	vertexArray.bind();
+	glDrawArrays(GL_TRIANGLES, 0, data->size());
+	vertexArray.unbind();
+}
+void MeshOBJ::release() {
+	this->data->release();
+	delete data;
+	data = 0;
 	this->vertexArray.release();
 }
 void MeshOBJ::getVertexVector(std::vector<glm::vec3>& v) {
-	this->vertices.getList(v);
+	data->getVertexData(v);
 }
 
+MeshOBJ::IMeshData* MeshOBJ::createDefaultMeshData() {
+	return new MeshDataRegular();
+}
+
+VertexArray* MeshOBJ::getVertexArray() {
+	return &this->vertexArray;
+}
 // Light
 Light::Light(const glm::vec3& diffuse,
 			 const glm::vec3& specular,

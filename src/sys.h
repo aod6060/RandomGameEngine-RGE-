@@ -29,6 +29,7 @@
 #include "input.h"
 #include "graphics.h"
 #include "transform.h"
+#include "skybox.h"
 #include "entity.h"
 #include "scene.h"
 

@@ -133,6 +133,7 @@
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\scene.cpp" />
     <ClCompile Include="..\..\src\scratch_pad_app.cpp" />
+    <ClCompile Include="..\..\src\skybox.cpp" />
     <ClCompile Include="..\..\src\timer.cpp" />
     <ClCompile Include="..\..\src\transform.cpp" />
     <ClCompile Include="..\..\src\util.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="..\..\src\input.h" />
     <ClInclude Include="..\..\src\scene.h" />
     <ClInclude Include="..\..\src\scratch_pad_app.h" />
+    <ClInclude Include="..\..\src\skybox.h" />
     <ClInclude Include="..\..\src\sys.h" />
     <ClInclude Include="..\..\src\timer.h" />
     <ClInclude Include="..\..\src\transform.h" />

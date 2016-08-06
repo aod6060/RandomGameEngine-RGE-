@@ -107,7 +107,7 @@ float specular(vec3 n, vec3 l, vec3 v, float r, float ref) {
   // Caculate inverse f0
   float invf0 = 1.0 - f0;
   // Caculate (v.h)^5
-  float vdoth5_clamp = (1.0 - vdoth_clamp) * (1.0 - vdoth_clamp) * (1.0 - vdoth_clamp) * (1.0 - vdoth_clamp) * (1.0 - vdoth_clamp);
+  float vdoth5_clamp = (1.0 - ldoth_clamp) * (1.0 - ldoth_clamp) * (1.0 - ldoth_clamp) * (1.0 - ldoth_clamp) * (1.0 - ldoth_clamp);
   // Caculate F
   float F = f0 + invf0 * vdoth5_clamp;
   // Caculate G (Geometry) using Cook-Torrence

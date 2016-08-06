@@ -157,22 +157,50 @@ public:
 		Attribute normal;
 	};
 
+	class IMeshData {
+	public:
+		virtual void init(
+			MeshOBJ* mesh, 
+			std::vector<glm::vec3>& v, 
+			std::vector<glm::vec2>& vt, 
+			std::vector<glm::vec3>& vn,
+			std::vector<Face>& f) = 0;
+		virtual GLuint size() = 0;
+		virtual void getVertexData(std::vector<glm::vec3>& v) = 0;
+		virtual void release() = 0;
+	};
 
+	class MeshDataRegular : public IMeshData {
+	private:
+		StaticVertexBuffer<glm::vec3> vertices;
+		StaticVertexBuffer<glm::vec2> texCoords;
+		StaticVertexBuffer<glm::vec3> normals;
+		StaticVertexBuffer<glm::vec3> tangents;
+		StaticVertexBuffer<glm::vec3> bitangents;
+	public:
+		virtual void init(
+			MeshOBJ* mesh,
+			std::vector<glm::vec3>& v,
+			std::vector<glm::vec2>& vt,
+			std::vector<glm::vec3>& vn,
+			std::vector<Face>& f);
+		virtual GLuint size();
+		virtual void getVertexData(std::vector<glm::vec3>& v);
+		virtual void release();
+	};
 private:
-	StaticVertexBuffer<glm::vec3> vertices;
-	StaticVertexBuffer<glm::vec2> texCoords;
-	StaticVertexBuffer<glm::vec3> normals;
-	StaticVertexBuffer<glm::vec3> tangents;
-	StaticVertexBuffer<glm::vec3> bitangents;
+	IMeshData* data;
 	VertexArray vertexArray;
 	// Private Methods
 	void handleFace(std::string str, GLuint& vertice, GLuint& texCoord, GLuint& normal);
 public:
 	MeshOBJ();
-	void init(std::string fn);
+	void init(std::string fn, IMeshData* data = MeshOBJ::createDefaultMeshData());
 	void render(Program& program);
 	void release();
 	void getVertexVector(std::vector<glm::vec3>& v);
+	VertexArray* getVertexArray();
+	static IMeshData* createDefaultMeshData();
 };
 struct Light {
 	glm::vec3 diffuse;

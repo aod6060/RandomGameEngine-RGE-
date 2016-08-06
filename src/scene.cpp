@@ -4,16 +4,11 @@ void Scene::init(std::string fn) {
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
+	skybox.init();
+
 	// Init Program
 	program.init("data/shaders/main_vert.glsl", "data/shaders/main_frag.glsl");
 	program.bind();
-	/*
-	program.getAttributes()->create("vertices");
-	program.getAttributes()->create("texCoords");
-	program.getAttributes()->create("normals");
-	program.getAttributes()->create("tangents");
-	program.getAttributes()->create("bitangents");
-	*/
 	// Init Uniforms
 	program.getUniforms()->create("projection");
 	program.getUniforms()->create("view");
@@ -97,6 +92,9 @@ void Scene::fixedUpdate() {
 void Scene::render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	skybox.render(camera, light);
+
 	program.bind();
 
 	camera.getProjectionMatrix(this->program);
@@ -136,6 +134,8 @@ void Scene::release() {
 	meshes.clear();
 
 	program.release();
+
+	skybox.release();
 }
 
 Program* Scene::getProgram() {
